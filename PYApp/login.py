@@ -10,43 +10,29 @@ root = customtkinter.CTk()
 root.geometry("500x350")
 
 def welcome():
-    print("Welcome to the program!")
+    print("Welcome To Parking Solutions!")
 
 def gainAccess():
-    username = entry1.get()
+    username = entry1.get().lower()  
     password = entry2.get()
-    
+
     if not len(username or password) < 1:
         try:
             db = open("DB/logininfo.txt", "r")
-            d = []
-            f = []
             for i in db:
-                a, b = i.split(",")
-                b = b.strip()
-                c = a, b
-                d.append(a)
-                f.append(b)
-                data = dict(zip(d, f))
-            
-            if username in data:
-                hashed = data[username].strip('b')
-                hashed = hashed.replace("'", "")
-                hashed = hashed.encode('utf-8')
-                
-                try:
-                    if bcrypt.checkpw(password.encode(), hashed):
+                user_id, stored_username, stored_password = i.strip().split(", ")
+                if stored_username.lower() == username:
+                    stored_password = stored_password[2:-1]
+                    stored_password = stored_password.encode('utf-8')
+                    if bcrypt.checkpw(password.encode('utf-8'), stored_password):
                         print("Successfully Logged In!")
-                        print("Hi", username)
+                        print("Hi", stored_username) 
                         welcome()
-                    else:
-                        print("Incorrect password")
-                except:
-                    print("Incorrect password or username")
-            else:
-                print("This Username doesn't exist")
+                        return 
+
+            print("Incorrect password or username")
         except:
-            print("This Username or Password doesn't exist")
+            print("An error occurred during login")
     else:
         print("Please try again")
 
