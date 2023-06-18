@@ -2,6 +2,7 @@ import bcrypt
 import customtkinter
 import tkinter
 import webbrowser
+import random
 
 customtkinter.set_appearance_mode("dark")
 customtkinter.set_default_color_theme("dark-blue")
@@ -13,6 +14,14 @@ def open_login():
     root.destroy()
     webbrowser.open_new("login.py")
 
+def generate_user_id():
+    user_id = random.randint(1000, 9999)
+    db = open("DB/logininfo.txt", "r")
+    for line in db:
+        if str(user_id) in line:
+            return generate_user_id() 
+    return str(user_id)
+
 def register():
     username = entry1.get()
     password1 = entry2.get()
@@ -21,9 +30,7 @@ def register():
     db = open("DB/logininfo.txt", "r")
     d = []
     for i in db:
-        a, b = i.split(",")
-        b = b.strip()
-        c = a, b
+        a, b, *_ = i.split(",")
         d.append(a)
 
     if not len(password1) <= 3:
@@ -34,18 +41,19 @@ def register():
             return
 
         if username in d:
-            print("This Username exists")
+            print("This username already exists")
             return
 
         if password1 == password2:
+            user_id = generate_user_id()
             password1 = password1.encode('utf-8')
             hashed_password = bcrypt.hashpw(password1, bcrypt.gensalt())
 
             db = open("DB/logininfo.txt", "a")
-            db.write(username + ", " + str(hashed_password) + "\n")
+            db.write(f"{user_id}, {username}, {hashed_password}\n")
 
             print("User created successfully!")
-            print("Please login to proceed:")
+            print("Please log in to proceed:")
 
             webbrowser.open_new("login.py")
             root.destroy()
