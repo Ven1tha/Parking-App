@@ -23,15 +23,16 @@ def generate_user_id():
     return str(user_id)
 
 def register():
-    username = entry1.get()
+    username = entry1.get().lower()
     password1 = entry2.get()
     password2 = entry3.get()
 
     db = open("DB/logininfo.txt", "r")
     d = []
     for i in db:
-        a, b, *_ = i.split(",")
-        d.append(a)
+        user_id, rest = i.strip().split(", ", 1) 
+        stored_username, stored_password = rest.split(", ")
+        d.append(stored_username.lower()) 
 
     if not len(password1) <= 3:
         db = open("DB/logininfo.txt", "r")
@@ -40,20 +41,19 @@ def register():
             print("Please enter a username")
             return
 
-        if username in d:
-            print("This username already exists")
+        if username.lower() in d: 
+            print("This Username Already Exists, Please Enter A Different Username")
             return
 
         if password1 == password2:
-            user_id = generate_user_id()
             password1 = password1.encode('utf-8')
             hashed_password = bcrypt.hashpw(password1, bcrypt.gensalt())
 
             db = open("DB/logininfo.txt", "a")
-            db.write(f"{user_id}, {username}, {hashed_password}\n")
+            db.write(str(generate_user_id()) + ", " + username + ", " + str(hashed_password) + "\n")
 
             print("User created successfully!")
-            print("Please log in to proceed:")
+            print("Please login to proceed:")
 
             webbrowser.open_new("login.py")
             root.destroy()

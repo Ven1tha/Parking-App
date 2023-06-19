@@ -26,15 +26,15 @@ def gainAccess():
                     stored_password = stored_password.encode('utf-8')
                     if bcrypt.checkpw(password.encode('utf-8'), stored_password):
                         print("Successfully Logged In!")
-                        print("Hi", stored_username) 
+                        print("Hi", stored_username)
                         welcome()
                         return 
 
-            print("Incorrect password or username")
+            print("Incorrect Username Or Password")
         except:
-            print("An error occurred during login")
+            print("Incorrect Password")
     else:
-        print("Please try again")
+        print("Please Try Again")
 
 def login():
     gainAccess()
