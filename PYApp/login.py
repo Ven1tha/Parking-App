@@ -9,7 +9,7 @@ customtkinter.set_default_color_theme("dark-blue")
 root = customtkinter.CTk()
 root.geometry("500x350")
 
-def welcome():
+def open_home():
     print("Welcome To Parking Solutions!")
 
 def gainAccess():
@@ -27,7 +27,7 @@ def gainAccess():
                     if bcrypt.checkpw(password.encode('utf-8'), stored_password):
                         print("Successfully Logged In!")
                         print("Hi", stored_username)
-                        welcome()
+                        open_home()
                         return 
 
             print("Incorrect Username Or Password")
