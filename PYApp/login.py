@@ -13,7 +13,7 @@ def open_home():
     print("Welcome To Parking Solutions!")
 
 def gainAccess():
-    username = entry1.get().lower()  
+    username = entry1.get().lower()
     password = entry2.get()
 
     if not len(username or password) < 1:
