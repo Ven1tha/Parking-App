@@ -3,7 +3,9 @@ import customtkinter
 import tkinter as tk
 import webbrowser
 
+#sets the background of the login page to black
 customtkinter.set_appearance_mode("dark")
+#sets the buttons within the page to blue
 customtkinter.set_default_color_theme("dark-blue")
 
 root = customtkinter.CTk()
@@ -12,6 +14,7 @@ root.geometry("500x350")
 def open_home():
     print("Welcome To Parking Solutions!")
 
+#setting username and password fields
 def gainAccess():
     username = entry1.get().lower()
     password = entry2.get()
@@ -39,10 +42,12 @@ def gainAccess():
 def login():
     gainAccess()
 
+#opens the signup.py file
 def open_signup():
     root.destroy()
     webbrowser.open_new("signup.py")
 
+#GUI
 frame = customtkinter.CTkFrame(master=root)
 frame.pack(pady=20, padx=60, fill="both", expand=True)
 
@@ -58,6 +63,7 @@ entry2.pack(padx=10, pady=12)
 login_button = customtkinter.CTkButton(master=frame, text="Login", command=login)
 login_button.pack(pady=12, padx=10)
 
+#button allows users to easily navigate to the signup page if they don't have an account
 signup_label = customtkinter.CTkLabel(master=frame, text="Don't have an account? Click Here!", font=("Blinker", 10), cursor="hand2", fg_color="#212121")
 signup_label.pack(pady=5)
 signup_label.bind("<Button-1>", lambda event: open_signup())

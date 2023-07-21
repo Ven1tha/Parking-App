@@ -10,10 +10,12 @@ customtkinter.set_default_color_theme("dark-blue")
 root = customtkinter.CTk()
 root.geometry("500x350")
 
+#opens login file and closes signup window
 def open_login():
     root.destroy()
     webbrowser.open_new("login.py")
 
+#generates a random userID that will be assigned to every user
 def generate_user_id():
     user_id = random.randint(1000, 9999)
     db = open("DB/logininfo.txt", "r")
@@ -22,6 +24,7 @@ def generate_user_id():
             return generate_user_id() 
     return str(user_id)
 
+#converts username to lowercase and stores the data into the txt file. If signup is successful, login page will automatically be opened
 def register():
     username = entry1.get().lower()
     password1 = entry2.get()
@@ -68,6 +71,7 @@ def register():
 def signup():
     register()
 
+#GUI
 frame = customtkinter.CTkFrame(master=root)
 frame.pack(pady=20, padx=60, fill="both", expand=True)
 
