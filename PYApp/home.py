@@ -37,7 +37,7 @@ city_entry.pack()
 def submit_listing():
     street = street_entry.get()
     city = city_entry.get()
-    with open("DB/listings.txt", "a") as file:
+    with open("PYApp\DB\listings.txt", "a") as file:
         file.write(f"{street},{city}\n")
     messagebox.showinfo("Listing Successful", "Parking space has been listed.")
     street_entry.delete(0, tk.END)
@@ -60,7 +60,7 @@ listbox.pack(pady=10)
 #reads data from the listings file and displays available parking spaces
 def populate_listbox():
     listbox.delete(0, tk.END)
-    with open("DB/listings.txt", "r") as file:
+    with open("PYApp\DB\listings.txt", "r") as file:
         lines = file.readlines()
         for line in lines:
             street, city = line.strip().split(",")
@@ -84,12 +84,12 @@ def book_space():
         booking_window.title("Book Parking Space")
         booking_window.configure(background="white")
 
-#lets user booka paking space and stores their details in a bookings file
+#lets user booka parking space and stores their details in a bookings file
         def submit_booking():
             first_name = first_name_entry.get()
             last_name = last_name_entry.get()
             duration = duration_entry.get()
-            with open("DB/bookings.txt", "a") as file:
+            with open("PYApp/DB/bookings.txt", "a") as file:
                 file.write(f"{selected_space},{first_name},{last_name},{duration}\n")
             messagebox.showinfo("Booking Successful", "Parking space has been booked.")
             booking_window.destroy()

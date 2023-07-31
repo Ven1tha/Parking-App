@@ -58,7 +58,7 @@ listbox.pack(pady=10)
 
 def populate_listbox():
     listbox.delete(0, tk.END)
-    with open("DB/listings.txt", "r") as file:
+    with open("DB\listings.txt", "r") as file:
         lines = file.readlines()
         for line in lines:
             street, city = line.strip().split(",")

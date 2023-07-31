@@ -18,7 +18,7 @@ def open_login():
 #generates a random userID that will be assigned to every user
 def generate_user_id():
     user_id = random.randint(1000, 9999)
-    db = open("DB/logininfo.txt", "r")
+    db = open("PYApp\DB\logininfo.txt", "r")
     for line in db:
         if str(user_id) in line:
             return generate_user_id() 
@@ -30,7 +30,7 @@ def register():
     password1 = entry2.get()
     password2 = entry3.get()
 
-    db = open("DB/logininfo.txt", "r")
+    db = open("PYApp\DB\logininfo.txt", "r")
     d = []
     for i in db:
         user_id, rest = i.strip().split(", ", 1) 
@@ -38,7 +38,11 @@ def register():
         d.append(stored_username.lower()) 
 
     if not len(password1) <= 3:
-        db = open("DB/logininfo.txt", "r")
+        if " " in password1:  # Check if the password contains spaces
+            print("Password cannot contain spaces")
+            return
+        
+        db = open("PYApp\DB\logininfo.txt", "r")
 
         if not username:
             print("Please enter a username")
@@ -52,7 +56,7 @@ def register():
             password1 = password1.encode('utf-8')
             hashed_password = bcrypt.hashpw(password1, bcrypt.gensalt())
 
-            db = open("DB/logininfo.txt", "a")
+            db = open("PYApp\DB\logininfo.txt", "a")
             db.write(str(generate_user_id()) + ", " + username + ", " + str(hashed_password) + "\n")
 
             print("User created successfully!")
