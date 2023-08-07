@@ -14,14 +14,14 @@ root.geometry("500x350")
 def open_home():
     print("Welcome To Parking Solutions!")
 
-#setting username and password fields
+'''setting username and password fields'''
 def gainAccess():
     username = entry1.get().lower()
     password = entry2.get()
 
     if not len(username or password) < 1:
         try:
-            db = open("DB/logininfo.txt", "r")
+            db = open("PYApp\DB\logininfo.txt", "r")
             for i in db:
                 user_id, stored_username, stored_password = i.strip().split(", ")
                 if stored_username.lower() == username:
