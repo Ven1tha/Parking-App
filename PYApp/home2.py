@@ -139,10 +139,10 @@ def book_parking_space():
         with open("DB/current_user.txt", "r") as current_user_file:
             user_id, username = current_user_file.read().strip().split(", ")
     except FileNotFoundError:
-        messagebox.showerror("Error", "current_user.txt not found!")
+        messagebox.showerror("Error", "current user not found!")
         return
     except ValueError:
-        messagebox.showerror("Error", "Invalid format in current_user.txt")
+        messagebox.showerror("Error", "Invalid format in the user file")
         return
 
     duration = simpledialog.askinteger("Booking Duration", "Enter booking duration in hours:")
