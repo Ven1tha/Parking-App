@@ -1,7 +1,7 @@
 import bcrypt
 import customtkinter
 import tkinter as tk
-import webbrowser
+import subprocess
 
 #sets the background of the login page to black
 customtkinter.set_appearance_mode("dark")
@@ -10,9 +10,7 @@ customtkinter.set_default_color_theme("dark-blue")
 
 root = customtkinter.CTk()
 root.geometry("500x350")
-
-def open_home():
-    print("Welcome To Parking Solutions!")
+root.title("Login")
 
 '''setting username and password fields'''
 def gainAccess():
@@ -21,13 +19,14 @@ def gainAccess():
 
     if not len(username or password) < 1:
         try:
-            db = open("PYApp\DB\logininfo.txt", "r")
+            db = open("DB\logininfo.txt", "r")
             for i in db:
                 user_id, stored_username, stored_password = i.strip().split(", ")
                 if stored_username.lower() == username:
                     stored_password = stored_password[2:-1]
                     stored_password = stored_password.encode('utf-8')
                     if bcrypt.checkpw(password.encode('utf-8'), stored_password):
+                        login_button.bind("<Button-1>", lambda event: open_home())
                         print("Successfully Logged In!")
                         print("Hi", stored_username)
                         open_home()
@@ -45,7 +44,13 @@ def login():
 #opens the signup.py file
 def open_signup():
     root.destroy()
-    webbrowser.open_new("signup.py")
+    subprocess.run(["python", "signup.py"])
+pass
+
+def open_home():
+    root.destroy()
+    subprocess.run(["python", "home2.py"])
+pass
 
 #GUI
 frame = customtkinter.CTkFrame(master=root)

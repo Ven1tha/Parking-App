@@ -1,9 +1,56 @@
 import tkinter as tk
 from tkinter import messagebox
 import requests
+from cryptography.fernet import Fernet
 
 # Define the Nominatim API endpoint
 NOMINATIM_ENDPOINT = "https://nominatim.openstreetmap.org/search"
+
+# Define the file for encryption key storage
+ENCRYPTION_KEY_FILE = "encryption_key.key"
+
+def load_encryption_key():
+    try:
+        with open(ENCRYPTION_KEY_FILE, "rb") as key_file:
+            return key_file.read()
+    except FileNotFoundError:
+        return None
+
+def save_encryption_key(key):
+    with open(ENCRYPTION_KEY_FILE, "wb") as key_file:
+        key_file.write(key)
+
+def generate_or_load_encryption_key():
+    loaded_key = load_encryption_key()
+    if loaded_key:
+        return loaded_key
+    else:
+        new_key = Fernet.generate_key()
+        save_encryption_key(new_key)
+        return new_key
+
+encryption_key = generate_or_load_encryption_key()
+cipher_suite = Fernet(encryption_key)
+
+def encrypt(text):
+    return cipher_suite.encrypt(text.encode()).decode()
+
+def decrypt(encrypted_text):
+    return cipher_suite.decrypt(encrypted_text.encode()).decode()
+
+def read_listings():
+    listings = []
+    with open("DB/listings.txt", "r") as file:
+        for line in file:
+            try:
+                key, encrypted_listing = line.strip().split(",", 1)
+                if key == encryption_key.decode():
+                    decrypted_listing = decrypt(encrypted_listing)
+                    listings.append(decrypted_listing)
+            except Exception as e:
+                print(f"Error decrypting listing: {e}")
+                # Handle decryption errors here
+    return listings
 
 def autocomplete_address(input_text):
     params = {
@@ -34,15 +81,22 @@ def list_parking_space():
     if house_number and street_name and city:
         full_address = f"{house_number}, {street_name}, {city}"
 
+        # Check if the address is already listed
+        if full_address in listbox_available_spaces.get(0, tk.END):
+            messagebox.showwarning("Warning", "This address is already listed.")
+            return
+
         # Validate the address
         if not validate_address(full_address):
             messagebox.showwarning("Warning", "Invalid address. Please enter a valid address.")
             return
 
-        with open("DB/listings.txt", "a") as file:
-            file.write(f"{house_number}, {street_name}, {city}\n")
+        encrypted_address = encrypt(full_address)
 
-        listbox_available_spaces.insert(tk.END, f"{house_number}, {street_name}, {city}")
+        with open("DB/listings.txt", "a") as file:
+            file.write(f"{encryption_key.decode()},{encrypted_address}\n")
+
+        listbox_available_spaces.insert(tk.END, decrypt(encrypted_address))
         entry_house_number.delete(0, tk.END)
         entry_street_name.delete(0, tk.END)
         entry_city.delete(0, tk.END)
@@ -62,16 +116,16 @@ def book_parking_space():
 
     selected_space = selected_space[0]
 
-    with open("DB\listings.txt", "r") as file:
+    with open("DB/listings.txt", "r") as file:
         listings = file.readlines()
 
     selected_listing = listings.pop(selected_space).strip()
 
-    with open("DB\listings.txt", "w") as file:
+    with open("DB/listings.txt", "w") as file:
         file.writelines(listings)
 
     try:
-        with open("DB\logininfo.txt", "r") as login_file:
+        with open("DB/logininfo.txt", "r") as login_file:
             # Read the last line of the logininfo.txt file
             last_line = None
             for line in login_file:
@@ -89,8 +143,10 @@ def book_parking_space():
         messagebox.showerror("Error", str(e))
         return
 
+    encrypted_selected_listing = encrypt(selected_listing)
+
     with open("DB/bookings.txt", "a") as bookings_file:
-        bookings_file.write(f"{user_id}, {username}, {selected_listing}\n")
+        bookings_file.write(f"{user_id}, {username}, {encrypted_selected_listing}\n")
 
     listbox_available_spaces.delete(selected_space)
 
@@ -138,11 +194,9 @@ def create_home_page():
     listbox_available_spaces = tk.Listbox(frame_book_parking, yscrollcommand=scrollbar_available_spaces.set)
     listbox_available_spaces.pack(fill=tk.BOTH, expand=True)
 
-    with open("DB\listings.txt", "r") as file:
-        listings = file.readlines()
-
+    listings = read_listings()
     for listing in listings:
-        listbox_available_spaces.insert(tk.END, listing.strip())
+        listbox_available_spaces.insert(tk.END, listing)
 
     scrollbar_available_spaces.config(command=listbox_available_spaces.yview)
 
