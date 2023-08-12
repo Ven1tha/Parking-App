@@ -1,28 +1,5 @@
 import tkinter as tk
 from tkinter import messagebox
-import requests
-
-# Define the Nominatim API endpoint
-NOMINATIM_ENDPOINT = "https://nominatim.openstreetmap.org/search"
-
-def autocomplete_address(input_text):
-    params = {
-        "format": "json",
-        "q": input_text
-    }
-    response = requests.get(NOMINATIM_ENDPOINT, params=params)
-    data = response.json()
-    suggestions = [result["display_name"] for result in data]
-    return suggestions
-
-def validate_address(address):
-    params = {
-        "format": "json",
-        "q": address
-    }
-    response = requests.get(NOMINATIM_ENDPOINT, params=params)
-    data = response.json()
-    return len(data) > 0
 
 def list_parking_space():
     global entry_house_number, entry_street_name, entry_city, listbox_available_spaces
@@ -32,14 +9,7 @@ def list_parking_space():
     city = entry_city.get()
 
     if house_number and street_name and city:
-        full_address = f"{house_number}, {street_name}, {city}"
-
-        # Validate the address
-        if not validate_address(full_address):
-            messagebox.showwarning("Warning", "Invalid address. Please enter a valid address.")
-            return
-
-        with open("DB/listings.txt", "a") as file:
+        with open("DB\listings.txt", "a") as file:
             file.write(f"{house_number}, {street_name}, {city}\n")
 
         listbox_available_spaces.insert(tk.END, f"{house_number}, {street_name}, {city}")

@@ -1,1 +1,3 @@
-6561, zanny, 78, Macleans Road, Auckland
+7154, timothy, 75, tingy, romania
+6561, zanny, 78, tinggy, auckland
+6561, zanny, 56, lenggy, biggy
