@@ -6,7 +6,7 @@ from tkinter import messagebox
 app = tk.Tk()
 
 # Set the window title
-app.title("Parking App")
+app.title("Home")
 
 # Set the background color to blue
 app.configure(background="blue")
@@ -36,7 +36,7 @@ city_entry.pack()
 def submit_listing():
     street = street_entry.get()
     city = city_entry.get()
-    with open("PYApp\DB\listings.txt", "a") as file:
+    with open("DB\listings.txt", "a") as file:
         file.write(f"{street},{city}\n")
     messagebox.showinfo("Listing Successful", "Parking space has been listed.")
     street_entry.delete(0, tk.END)
@@ -59,7 +59,7 @@ listbox.pack(pady=10)
 
 def populate_listbox():
     listbox.delete(0, tk.END)
-    with open("PYApp\DB\listings.txt", "r") as file:
+    with open("DB\listings.txt", "r") as file:
         lines = file.readlines()
         for line in lines:
             street, city = line.strip().split(',')
@@ -73,14 +73,14 @@ def book_space():
         selected_items = [listbox.get(index) for index in selected_indices]
 
         # Read the contents of listings.txt into a list
-        with open("PYApp\DB\listings.txt", "r") as file:
+        with open("DB\listings.txt", "r") as file:
             lines = file.readlines()
 
         # Create a new list with remaining parking spaces
         remaining_listings = [line.strip() for line in lines if line.strip() not in selected_items]
 
         # Update the listings.txt file with the new list
-        with open("PYApp\DB\listings.txt", "w") as file:
+        with open("DB\listings.txt", "w") as file:
             file.write("\n".join(remaining_listings))
 
         # Remove the parking space from the listbox
@@ -111,7 +111,7 @@ def book_space():
             first_name = first_name_entry.get()
             last_name = last_name_entry.get()
             duration = duration_entry.get()
-            with open("PYApp\DB/bookings.txt", "a") as file:
+            with open("DB/bookings.txt", "a") as file:
                 file.write(f"{', '.join(selected_items)},{first_name},{last_name},{duration}\n")
             messagebox.showinfo("Booking Successful", "Parking space has been booked.")
             booking_window.destroy()

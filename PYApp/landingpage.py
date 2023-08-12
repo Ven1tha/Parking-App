@@ -8,18 +8,18 @@ def open_next_page():
     window.destroy()
 
     # Function to handle button click and navigate to the next page
-    subprocess.run(['python', 'PYApp\login.py'])
+    subprocess.run(['python', 'login.py'])
     pass
 
 # Create the main window
 window = tk.Tk()
 
 # Set window properties
-window.title("Python App Landing")
+window.title("Parking Solutions")
 window.geometry("800x600")  # Set the desired window size
 
 # Load the background image
-image = Image.open("PYApp\Assets\landingimage.jpg")
+image = Image.open("Assets\landingimage.jpg")
 image = image.resize((800, 600), Image.LANCZOS) # Resize the image to fit the window
 background_image = ImageTk.PhotoImage(image)
 

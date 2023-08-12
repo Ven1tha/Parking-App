@@ -1,5 +1,28 @@
 import tkinter as tk
 from tkinter import messagebox
+import requests
+
+# Define the Nominatim API endpoint
+NOMINATIM_ENDPOINT = "https://nominatim.openstreetmap.org/search"
+
+def autocomplete_address(input_text):
+    params = {
+        "format": "json",
+        "q": input_text
+    }
+    response = requests.get(NOMINATIM_ENDPOINT, params=params)
+    data = response.json()
+    suggestions = [result["display_name"] for result in data]
+    return suggestions
+
+def validate_address(address):
+    params = {
+        "format": "json",
+        "q": address
+    }
+    response = requests.get(NOMINATIM_ENDPOINT, params=params)
+    data = response.json()
+    return len(data) > 0
 
 def list_parking_space():
     global entry_house_number, entry_street_name, entry_city, listbox_available_spaces
@@ -9,7 +32,14 @@ def list_parking_space():
     city = entry_city.get()
 
     if house_number and street_name and city:
-        with open("PYApp\DB\listings.txt", "a") as file:
+        full_address = f"{house_number}, {street_name}, {city}"
+
+        # Validate the address
+        if not validate_address(full_address):
+            messagebox.showwarning("Warning", "Invalid address. Please enter a valid address.")
+            return
+
+        with open("DB/listings.txt", "a") as file:
             file.write(f"{house_number}, {street_name}, {city}\n")
 
         listbox_available_spaces.insert(tk.END, f"{house_number}, {street_name}, {city}")
@@ -32,16 +62,16 @@ def book_parking_space():
 
     selected_space = selected_space[0]
 
-    with open("PYApp\DB\listings.txt", "r") as file:
+    with open("DB\listings.txt", "r") as file:
         listings = file.readlines()
 
     selected_listing = listings.pop(selected_space).strip()
 
-    with open("PYApp\DB\listings.txt", "w") as file:
+    with open("DB\listings.txt", "w") as file:
         file.writelines(listings)
 
     try:
-        with open("PYApp\DB\logininfo.txt", "r") as login_file:
+        with open("DB\logininfo.txt", "r") as login_file:
             # Read the last line of the logininfo.txt file
             last_line = None
             for line in login_file:
@@ -59,7 +89,7 @@ def book_parking_space():
         messagebox.showerror("Error", str(e))
         return
 
-    with open("PYApp\DB/bookings.txt", "a") as bookings_file:
+    with open("DB/bookings.txt", "a") as bookings_file:
         bookings_file.write(f"{user_id}, {username}, {selected_listing}\n")
 
     listbox_available_spaces.delete(selected_space)
@@ -108,7 +138,7 @@ def create_home_page():
     listbox_available_spaces = tk.Listbox(frame_book_parking, yscrollcommand=scrollbar_available_spaces.set)
     listbox_available_spaces.pack(fill=tk.BOTH, expand=True)
 
-    with open("PYApp\DB\listings.txt", "r") as file:
+    with open("DB\listings.txt", "r") as file:
         listings = file.readlines()
 
     for listing in listings:
