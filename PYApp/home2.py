@@ -121,32 +121,24 @@ def book_parking_space():
 
     selected_listing = listings.pop(selected_space).strip()
 
-    with open("DB/listings.txt", "w") as file:
-        file.writelines(listings)
-
     try:
-        with open("DB/logininfo.txt", "r") as login_file:
-            # Read the last line of the logininfo.txt file
-            last_line = None
-            for line in login_file:
-                last_line = line.strip().split(", ")
-            if last_line and len(last_line) == 3:  # Check for three pieces of information (UserID, Username, Password)
-                user_id, username, _ = last_line  # Discard the password
-                user_id = user_id.strip()
-                username = username.strip()
-            else:
-                raise ValueError("Invalid format in logininfo.txt")
+        with open("DB/current_user.txt", "r") as current_user_file:
+            user_id, username = current_user_file.read().strip().split(", ")
     except FileNotFoundError:
-        messagebox.showerror("Error", "logininfo.txt not found!")
+        messagebox.showerror("Error", "current_user.txt not found!")
         return
-    except ValueError as e:
-        messagebox.showerror("Error", str(e))
+    except ValueError:
+        messagebox.showerror("Error", "Invalid format in current_user.txt")
         return
 
     encrypted_selected_listing = encrypt(selected_listing)
 
     with open("DB/bookings.txt", "a") as bookings_file:
         bookings_file.write(f"{user_id}, {username}, {encrypted_selected_listing}\n")
+
+    with open("DB/listings.txt", "w") as listings_file:
+        for listing in listings:
+            listings_file.write(listing)
 
     listbox_available_spaces.delete(selected_space)
 

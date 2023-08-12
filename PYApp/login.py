@@ -19,18 +19,19 @@ def gainAccess():
 
     if not len(username or password) < 1:
         try:
-            db = open("DB\logininfo.txt", "r")
+            db = open("DB\\logininfo.txt", "r")
             for i in db:
                 user_id, stored_username, stored_password = i.strip().split(", ")
                 if stored_username.lower() == username:
                     stored_password = stored_password[2:-1]
                     stored_password = stored_password.encode('utf-8')
                     if bcrypt.checkpw(password.encode('utf-8'), stored_password):
-                        login_button.bind("<Button-1>", lambda event: open_home())
+                        with open("DB\\current_user.txt", "w") as user_file:
+                            user_file.write(f"{user_id}, {stored_username}")
                         print("Successfully Logged In!")
                         print("Hi", stored_username)
                         open_home()
-                        return 
+                        return
 
             print("Incorrect Username Or Password")
         except:
