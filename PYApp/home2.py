@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import messagebox, simpledialog
 import requests
 from cryptography.fernet import Fernet
+import re
 
 # Defining the Nominatim API endpoint
 NOMINATIM_ENDPOINT = "https://nominatim.openstreetmap.org/search"
@@ -87,6 +88,16 @@ def list_parking_space():
     house_number = entry_house_number.get()
     street_name = entry_street_name.get()
     city = entry_city.get()
+
+    # Check if the street name and city have integers
+    if not street_name.isalpha() or not city.isalpha():
+        messagebox.showwarning("Warning", "Street name and city should contain only alphabetic characters.")
+        return
+
+    #Ensure the inputs are english
+    if not re.match(r'^[a-zA-Z]+$', street_name) or not re.match(r'^[a-zA-Z]+$', city):
+        messagebox.showwarning("Warning", "Street name and city should contain only English alphabetic characters.")
+        return
 
     if house_number and street_name and city:
         full_address = f"{house_number}, {street_name}, {city}"

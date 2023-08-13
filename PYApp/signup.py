@@ -4,7 +4,6 @@ import tkinter.messagebox
 import tkinter
 import subprocess
 import random
-import webbrowser
 import re
 import sys
 

@@ -3,7 +3,6 @@ import requests
 import webview
 import folium
 from folium import IFrame
-from home2 import decrypt  # Imports the decrypt function from home2.py
 
 #Defines the Mapbox API access token
 MAPBOX_ACCESS_TOKEN = "pk.eyJ1IjoibmlnZXJpYW5wcmluY2UiLCJhIjoiY2xrZzBqeXR4MTZscjNlczRzNGJzZTQ2dyJ9.HXMHqRz1_umaam16lvKQFw"
