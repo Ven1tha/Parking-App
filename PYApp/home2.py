@@ -81,10 +81,19 @@ def list_parking_space():
     if house_number and street_name and city:
         full_address = f"{house_number}, {street_name}, {city}"
 
-        # Check if the address is already listed
-        if full_address in [item[0] for item in listbox_available_spaces.get(0, tk.END)]:
+        # Check if the address is already listed in the listbox
+        if full_address in listbox_available_spaces.get(0, tk.END):
             messagebox.showwarning("Warning", "This address is already listed.")
             return
+
+        # Check if the address is already listed in the listings.txt file
+        with open("DB/listings.txt", "r") as listings_file:
+            for line in listings_file:
+                key, encrypted_listing = line.strip().split(",", 1)
+                decrypted_listing = decrypt(encrypted_listing)
+                if decrypted_listing == full_address:
+                    messagebox.showwarning("Warning", "This address is already listed.")
+                    return
 
         # Validate the address
         if not validate_address(full_address):
@@ -173,7 +182,7 @@ def create_home_page():
 
     home_page = tk.Tk()
     home_page.title("Home Page")
-    
+
     label_heading = tk.Label(home_page, text="Home Page", font=("Helvetica", 20))
     label_heading.pack(pady=10)
 
@@ -233,3 +242,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

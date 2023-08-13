@@ -6,47 +6,43 @@ import random
 import webbrowser
 import re
 
-customtkinter.set_appearance_mode("dark")
+# Set appearance mode to light and default color theme to dark-blue
+customtkinter.set_appearance_mode("light")
 customtkinter.set_default_color_theme("dark-blue")
 
 root = customtkinter.CTk()
 root.geometry("500x350")
 root.title("Signup")
 
-#opens login file and closes signup window
+# Function to open the login.py file and close the signup window
 def open_login():
     root.destroy()
     subprocess.run(["python", "login.py"])
-pass
 
-#generates a random userID that will be assigned to every user
+# Generates a random userID that will be assigned to every user
 def generate_user_id():
     user_id = random.randint(1000, 9999)
-    db = open("DB\logininfo.txt", "r")
-    for line in db:
-        if str(user_id) in line:
-            return generate_user_id() 
+    with open("DB\\logininfo.txt", "r") as db:
+        for line in db:
+            if str(user_id) in line:
+                return generate_user_id() 
     return str(user_id)
 
-#converts username to lowercase and stores the data into the txt file. If signup is successful, login page will automatically be opened
+# Registers a new user
 def register():
     username = entry1.get().lower()
     password1 = entry2.get()
     password2 = entry3.get()
 
-    db = open("DB\logininfo.txt", "r")
-    d = []
-    for i in db:
-        user_id, rest = i.strip().split(", ", 1) 
-        stored_username, stored_password = rest.split(", ")
-        d.append(stored_username.lower()) 
+    with open("DB\\logininfo.txt", "r") as db:
+        existing_usernames = [line.split(", ")[1].strip().lower() for line in db]
 
-    if not len(password1) <= 3:
-        if " " in username:  # Check if the username contains spaces
+    if len(password1) > 3:
+        if " " in username:
             print("Username cannot contain spaces")
             return
         
-        if " " in password1:  # Check if the password contains spaces
+        if " " in password1:
             print("Password cannot contain spaces")
             return
         
@@ -54,7 +50,7 @@ def register():
             print("Username can only contain English letters, numbers, and characters or is empty")
             return
 
-        if username.lower() in d: 
+        if username.lower() in existing_usernames: 
             print("This Username Already Exists, Please Enter A Different Username")
             return
 
@@ -66,8 +62,8 @@ def register():
             password1 = password1.encode('utf-8')
             hashed_password = bcrypt.hashpw(password1, bcrypt.gensalt())
 
-            db = open("DB\logininfo.txt", "a")
-            db.write(str(generate_user_id()) + ", " + username + ", " + str(hashed_password) + "\n")
+            with open("DB\\logininfo.txt", "a") as db:
+                db.write(f"{generate_user_id()}, {username}, {hashed_password}\n")
 
             print("User created successfully!")
             print("Please login to proceed:")
@@ -85,7 +81,7 @@ def register():
 def signup():
     register()
 
-#GUI
+# GUI
 frame = customtkinter.CTkFrame(master=root)
 frame.pack(pady=20, padx=60, fill="both", expand=True)
 
@@ -104,8 +100,9 @@ entry3.pack(padx=10, pady=12)
 signup_button = customtkinter.CTkButton(master=frame, text="Signup", command=signup)
 signup_button.pack(pady=12, padx=10)
 
-login_label = customtkinter.CTkLabel(master=frame, text="Already Have An Account? Click Here!", font=("Blinker", 10), cursor="hand2", fg_color="#212121")
+login_label = customtkinter.CTkLabel(master=frame, text="Already Have An Account? Click Here!", font=("Blinker", 10), cursor="hand2", fg_color="#E5E5E5")
 login_label.pack(pady=1)
 login_label.bind("<Button-1>", lambda event: open_login())
 
 root.mainloop()
+
