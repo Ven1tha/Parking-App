@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import messagebox
+from tkinter import messagebox, simpledialog
 import requests
 from cryptography.fernet import Fernet
 
@@ -43,10 +43,10 @@ def read_listings():
     with open("DB/listings.txt", "r") as file:
         for line in file:
             try:
-                key, encrypted_listing = line.strip().split(",", 1)
+                key, encrypted_listing, hourly_price = line.strip().split(",", 2)
                 if key == encryption_key.decode():
                     decrypted_listing = decrypt(encrypted_listing)
-                    listings.append(decrypted_listing)
+                    listings.append((decrypted_listing, hourly_price))
             except Exception as e:
                 print(f"Error decrypting listing: {e}")
                 # Handle decryption errors here
@@ -82,7 +82,7 @@ def list_parking_space():
         full_address = f"{house_number}, {street_name}, {city}"
 
         # Check if the address is already listed
-        if full_address in listbox_available_spaces.get(0, tk.END):
+        if full_address in [item[0] for item in listbox_available_spaces.get(0, tk.END)]:
             messagebox.showwarning("Warning", "This address is already listed.")
             return
 
@@ -91,12 +91,18 @@ def list_parking_space():
             messagebox.showwarning("Warning", "Invalid address. Please enter a valid address.")
             return
 
+        # Prompt the user for hourly price
+        hourly_price = simpledialog.askfloat("Hourly Price", "Enter hourly price for the parking space:")
+        if hourly_price is None:
+            return  # User canceled
+
         encrypted_address = encrypt(full_address)
 
         with open("DB/listings.txt", "a") as file:
-            file.write(f"{encryption_key.decode()},{encrypted_address}\n")
+            file.write(f"{encryption_key.decode()},{encrypted_address},{hourly_price}\n")
 
-        listbox_available_spaces.insert(tk.END, decrypt(encrypted_address))
+        display_text = f"{full_address} - Hourly Price: {hourly_price}"
+        listbox_available_spaces.insert(tk.END, display_text)
         entry_house_number.delete(0, tk.END)
         entry_street_name.delete(0, tk.END)
         entry_city.delete(0, tk.END)
@@ -119,7 +125,15 @@ def book_parking_space():
     with open("DB/listings.txt", "r") as file:
         listings = file.readlines()
 
-    selected_listing = listings.pop(selected_space).strip()
+    selected_listing_parts = listings[selected_space].strip().split(",", 2)
+
+    if len(selected_listing_parts) != 3:  # Verify if the split produces three parts
+        messagebox.showerror("Error", "Invalid listing format in listings.txt")
+        return
+
+    selected_listing, hourly_price = selected_listing_parts[1], selected_listing_parts[2]  # Skip the encryption key
+
+    address = decrypt(selected_listing)
 
     try:
         with open("DB/current_user.txt", "r") as current_user_file:
@@ -131,18 +145,28 @@ def book_parking_space():
         messagebox.showerror("Error", "Invalid format in current_user.txt")
         return
 
+    duration = simpledialog.askinteger("Booking Duration", "Enter booking duration in hours:")
+    if duration is None:
+        return  # User canceled
+
+    total_cost = float(hourly_price) * duration
+
     encrypted_selected_listing = encrypt(selected_listing)
 
     with open("DB/bookings.txt", "a") as bookings_file:
-        bookings_file.write(f"{user_id}, {username}, {encrypted_selected_listing}\n")
+        bookings_file.write(f"{user_id}, {username}, {encrypted_selected_listing}, {duration}, {total_cost:.2f}\n")
 
     with open("DB/listings.txt", "w") as listings_file:
-        for listing in listings:
-            listings_file.write(listing)
+        for i, listing in enumerate(listings):
+            if i != selected_space:
+                listings_file.write(listing)
 
     listbox_available_spaces.delete(selected_space)
 
-    messagebox.showinfo("Success", "Parking space booked successfully!")
+    # Import and call the show_summary_page function
+    from summary import show_summary_page
+    booking_info = (username, float(hourly_price), duration, total_cost)
+    show_summary_page(booking_info, address)
 
 def create_home_page():
     global entry_house_number, entry_street_name, entry_city, listbox_available_spaces
@@ -187,8 +211,9 @@ def create_home_page():
     listbox_available_spaces.pack(fill=tk.BOTH, expand=True)
 
     listings = read_listings()
-    for listing in listings:
-        listbox_available_spaces.insert(tk.END, listing)
+    for listing, hourly_price in listings:
+        display_text = f"{listing} - Hourly Price: {hourly_price}"
+        listbox_available_spaces.insert(tk.END, display_text)
 
     scrollbar_available_spaces.config(command=listbox_available_spaces.yview)
 
