@@ -11,3 +11,5 @@
 6383, tommy, b'$2b$12$hE/rzriZJEVYXu3BUuJbI.BGAKrSpMhYCfxuYjm3ew.1Eh1FUaXHq'
 5015, timmmy, b'$2b$12$qF4KyZLLiAr3E8LweQJfHO56/vkTD/ITNEBv.VTjZql2lKpeREypG'
 5648, jeff, b'$2b$12$CsCiJXtIju..LIGPbz80BOmMd79AbFgkNaLaIt7rCDOSs/thMdhg2'
+5601, lin, b'$2b$12$1RTVoLRaIjavOquIbnXBvuMJNxDO5e1ykefSV09tXyzHsiyuSdIaq'
+8242, ling, b'$2b$12$qs.MuEazC0YQ4STm9u.qDu0cwtW6jr3zulry0XfdMYeiGkVv3RMni'
