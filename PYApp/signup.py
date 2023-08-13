@@ -1,10 +1,12 @@
 import bcrypt
 import customtkinter
+import tkinter.messagebox
 import tkinter
 import subprocess
 import random
 import webbrowser
 import re
+import sys
 
 # Sets appearance mode to light and default color theme to dark-blue
 customtkinter.set_appearance_mode("light")
@@ -25,7 +27,7 @@ def generate_user_id():
     with open("DB\\logininfo.txt", "r") as db:
         for line in db:
             if str(user_id) in line:
-                return generate_user_id() 
+                return generate_user_id()
     return str(user_id)
 
 # Registers a new user
@@ -39,43 +41,43 @@ def register():
 
     if len(password1) > 3:
         if " " in username:
-            print("Username cannot contain spaces")
-            return
-        
-        if " " in password1:
-            print("Password cannot contain spaces")
-            return
-        
-        if not re.match("^[a-zA-Z0-9!@#$%^&*()_+{}\[\]:;<>,.?~\\/]+$", username):
-            print("Username can only contain English letters, numbers, and characters or is empty")
+            tkinter.messagebox.showerror("Error", "Username cannot contain spaces")
             return
 
-        if username.lower() in existing_usernames: 
-            print("This Username Already Exists, Please Enter A Different Username")
+        if " " in password1:
+            tkinter.messagebox.showerror("Error", "Password cannot contain spaces")
+            return
+
+        if not re.match("^[a-zA-Z0-9!@#$%^&*()_+{}\[\]:;<>,.?~\\/]+$", username):
+            tkinter.messagebox.showerror("Error", "Username can only contain English letters, numbers, and characters or is empty")
+            return
+
+        if username.lower() in existing_usernames:
+            tkinter.messagebox.showerror("Error", "This Username Already Exists, Please Enter A Different Username")
             return
 
         if password1 == password2:
             if not re.match("^[a-zA-Z0-9!@#$%^&*()_+{}\[\]:;<>,.?~\\/]+$", password1):
-                print("Password can only contain English letters, numbers, and characters")
+                tkinter.messagebox.showerror("Error", "Password can only contain English letters, numbers, and characters")
                 return
-            
+
             password1 = password1.encode('utf-8')
             hashed_password = bcrypt.hashpw(password1, bcrypt.gensalt())
 
             with open("DB\\logininfo.txt", "a") as db:
                 db.write(f"{generate_user_id()}, {username}, {hashed_password}\n")
 
-            print("User created successfully!")
-            print("Please login to proceed:")
+            tkinter.messagebox.showinfo("Success", "User created successfully!\nPlease login to proceed:")
+            root.destroy()  # Close the signup window
 
-            webbrowser.open("login.py")
-            root.destroy()
+            # Run the login.py script using the same Python interpreter
+            subprocess.run([sys.executable, "login.py"])
 
         else:
-            print("Passwords do not match")
+            tkinter.messagebox.showerror("Error", "Passwords do not match")
             return
     else:
-        print("Password needs to be at least 4 characters long")
+        tkinter.messagebox.showerror("Error", "Password needs to be at least 4 characters long")
         return
 
 def signup():

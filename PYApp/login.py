@@ -1,6 +1,7 @@
 import bcrypt
 import customtkinter
 import subprocess
+import tkinter.messagebox
 
 # Sets the background of the login page to black
 customtkinter.set_appearance_mode("light")
@@ -28,16 +29,15 @@ def gainAccess():
                     if bcrypt.checkpw(password.encode('utf-8'), stored_password):
                         with open("DB\\current_user.txt", "w") as user_file:
                             user_file.write(f"{user_id}, {stored_username}")
-                        print("Successfully Logged In!")
-                        print("Hi", stored_username)
+                        tkinter.messagebox.showinfo("Success", f"Successfully Logged In!\nHi, {stored_username}")
                         open_home()
                         return
 
-            print("Incorrect Username Or Password")
+            tkinter.messagebox.showerror("Error", "Incorrect Username Or Password")
         except:
-            print("Incorrect Password")
+            tkinter.messagebox.showerror("Error", "Incorrect Password")
     else:
-        print("Please Try Again")
+        tkinter.messagebox.showerror("Error", "Please Try Again")
 
 def login():
     gainAccess()

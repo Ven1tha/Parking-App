@@ -105,6 +105,13 @@ def list_parking_space():
                     messagebox.showwarning("Warning", "This address is already listed.")
                     return
 
+        # Check if all three input fields have the same value
+        if (
+            street_name == city
+        ):
+            messagebox.showerror("Error", "Please enter different values for each field.")
+            return
+
         # Validates the address
         if not validate_address(full_address):
             messagebox.showwarning("Warning", "Invalid address. Please enter a valid address.")
