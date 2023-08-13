@@ -1,6 +1,5 @@
 import bcrypt
 import customtkinter
-import tkinter as tk
 import subprocess
 
 # Sets the background of the login page to black
@@ -75,4 +74,3 @@ signup_label.pack(pady=5)
 signup_label.bind("<Button-1>", lambda event: open_signup())
 
 root.mainloop()
-

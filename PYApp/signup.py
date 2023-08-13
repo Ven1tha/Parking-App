@@ -105,4 +105,3 @@ login_label.pack(pady=1)
 login_label.bind("<Button-1>", lambda event: open_login())
 
 root.mainloop()
-

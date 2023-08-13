@@ -4,7 +4,7 @@ import subprocess
 from PIL import ImageTk, Image
 
 def open_next_page():
-    #Closes the old window before opening a new one
+    # Closes the old window before opening a new one
     window.destroy()
 
     # Function to handle button click and navigate to the next page
@@ -19,8 +19,8 @@ window.title("Parking Solutions")
 window.geometry("800x600")  # Sets the desired window size
 
 # Loads the background image
-image = Image.open("Assets\landingimage.jpg")
-image = image.resize((800, 600), Image.LANCZOS) # Resizes the image to fit the window
+image = Image.open("Assets/landingimage.jpg")
+image = image.resize((800, 600), Image.LANCZOS)  # Resizes the image to fit the window
 background_image = ImageTk.PhotoImage(image)
 
 # Creates a canvas to place the image and overlay
@@ -42,4 +42,3 @@ button = ttk.Button(window, text="Login", command=open_next_page, style="TButton
 button_window = canvas.create_window(400, 400, anchor="center", window=button)
 
 window.mainloop()
-
