@@ -6,7 +6,7 @@ import random
 import webbrowser
 import re
 
-# Set appearance mode to light and default color theme to dark-blue
+# Sets appearance mode to light and default color theme to dark-blue
 customtkinter.set_appearance_mode("light")
 customtkinter.set_default_color_theme("dark-blue")
 

@@ -3,12 +3,13 @@ from tkinter import messagebox, simpledialog
 import requests
 from cryptography.fernet import Fernet
 
-# Define the Nominatim API endpoint
+# Defining the Nominatim API endpoint
 NOMINATIM_ENDPOINT = "https://nominatim.openstreetmap.org/search"
 
-# Define the file for encryption key storage
+# Defining the file for encryption key storage
 ENCRYPTION_KEY_FILE = "encryption_key.key"
 
+# Functions for encryption key management
 def load_encryption_key():
     try:
         with open(ENCRYPTION_KEY_FILE, "rb") as key_file:
@@ -16,10 +17,12 @@ def load_encryption_key():
     except FileNotFoundError:
         return None
 
+# Saves the encryption key file
 def save_encryption_key(key):
     with open(ENCRYPTION_KEY_FILE, "wb") as key_file:
         key_file.write(key)
 
+#Loads or genertes an encryption key when needed
 def generate_or_load_encryption_key():
     loaded_key = load_encryption_key()
     if loaded_key:
@@ -29,15 +32,19 @@ def generate_or_load_encryption_key():
         save_encryption_key(new_key)
         return new_key
 
+# Initialises encryption key and cipher suite
 encryption_key = generate_or_load_encryption_key()
 cipher_suite = Fernet(encryption_key)
 
+# Encryption function
 def encrypt(text):
     return cipher_suite.encrypt(text.encode()).decode()
 
+#Decypt function
 def decrypt(encrypted_text):
     return cipher_suite.decrypt(encrypted_text.encode()).decode()
 
+# Function to read and decrypt listings from the file
 def read_listings():
     listings = []
     with open("DB/listings.txt", "r") as file:
@@ -49,9 +56,10 @@ def read_listings():
                     listings.append((decrypted_listing, hourly_price))
             except Exception as e:
                 print(f"Error decrypting listing: {e}")
-                # Handle decryption errors here
+                # Handles decryption errors
     return listings
 
+# Function to autocomplete address using Nominatim API
 def autocomplete_address(input_text):
     params = {
         "format": "json",
@@ -62,6 +70,7 @@ def autocomplete_address(input_text):
     suggestions = [result["display_name"] for result in data]
     return suggestions
 
+# Function to validate address using Nominatim API
 def validate_address(address):
     params = {
         "format": "json",
@@ -71,6 +80,7 @@ def validate_address(address):
     data = response.json()
     return len(data) > 0
 
+# Function to list a parking space
 def list_parking_space():
     global entry_house_number, entry_street_name, entry_city, listbox_available_spaces
 
@@ -95,15 +105,15 @@ def list_parking_space():
                     messagebox.showwarning("Warning", "This address is already listed.")
                     return
 
-        # Validate the address
+        # Validates the address
         if not validate_address(full_address):
             messagebox.showwarning("Warning", "Invalid address. Please enter a valid address.")
             return
 
-        # Prompt the user for hourly price
+        # Prompts the user for hourly price
         hourly_price = simpledialog.askfloat("Hourly Price", "Enter hourly price for the parking space:")
         if hourly_price is None:
-            return  # User canceled
+            return  # If the User canceled then return
 
         encrypted_address = encrypt(full_address)
 
@@ -120,6 +130,7 @@ def list_parking_space():
     else:
         messagebox.showwarning("Warning", "Please fill in all the fields!")
 
+# Function to book a parking space
 def book_parking_space():
     global listbox_available_spaces
 
@@ -140,7 +151,7 @@ def book_parking_space():
         messagebox.showerror("Error", "Invalid listing format in listings.txt")
         return
 
-    selected_listing, hourly_price = selected_listing_parts[1], selected_listing_parts[2]  # Skip the encryption key
+    selected_listing, hourly_price = selected_listing_parts[1], selected_listing_parts[2]  # Skips the encryption key
 
     address = decrypt(selected_listing)
 
@@ -156,7 +167,7 @@ def book_parking_space():
 
     duration = simpledialog.askinteger("Booking Duration", "Enter booking duration in hours:")
     if duration is None:
-        return  # User canceled
+        return  # If the User canceled then return
 
     total_cost = float(hourly_price) * duration
 
@@ -172,11 +183,12 @@ def book_parking_space():
 
     listbox_available_spaces.delete(selected_space)
 
-    # Import and call the show_summary_page function
+    # Imports and calls the show_summary_page function
     from summary import show_summary_page
     booking_info = (username, float(hourly_price), duration, total_cost)
     show_summary_page(booking_info, address)
 
+# Function to create the home page GUI
 def create_home_page():
     global entry_house_number, entry_street_name, entry_city, listbox_available_spaces
 
@@ -229,13 +241,15 @@ def create_home_page():
     button_book_parking = tk.Button(frame_book_parking, text="Book Parking Space", command=book_parking_space)
     button_book_parking.pack(pady=10)
 
+    # Starts the main GUI loop
     home_page.mainloop()
 
+# Main function to start the application
 def main():
     root = tk.Tk()
-    root.withdraw()  # Hide the main root window
+    root.withdraw()  # Hides the main root window
 
-    # Explicitly create and open the home page as the main application window
+    # Explicitly creates and opens the home page as the main application window
     create_home_page()
 
     root.mainloop()

@@ -3,10 +3,12 @@ import requests
 import webview
 import folium
 from folium import IFrame
-from home2 import decrypt  # Import the decrypt function from home2.py
+from home2 import decrypt  # Imports the decrypt function from home2.py
 
-MAPBOX_ACCESS_TOKEN = "pk.eyJ1IjoibmlnZXJpYW5wcmluY2UiLCJhIjoiY2xrZzBqeXR4MTZscjNlczRzNGJzZTQ2dyJ9.HXMHqRz1_umaam16lvKQFw"  # Replace with your actual Mapbox access token
+#Defines the Mapbox API access token
+MAPBOX_ACCESS_TOKEN = "pk.eyJ1IjoibmlnZXJpYW5wcmluY2UiLCJhIjoiY2xrZzBqeXR4MTZscjNlczRzNGJzZTQ2dyJ9.HXMHqRz1_umaam16lvKQFw"
 
+# Function to retrieve coordinates from an address using Mapbox API
 def get_coordinates_from_address(address):
     geocoding_endpoint = f"https://api.mapbox.com/geocoding/v5/mapbox.places/{address}.json"
 
@@ -24,12 +26,14 @@ def get_coordinates_from_address(address):
         print("Error retrieving coordinates.")
         return None
 
+# Function to display the booking summary page with map
 def show_summary_page(booking_info, address):
     summary_page = tk.Tk()
     summary_page.title("Booking Summary")
 
     username, hourly_price, duration, total_cost = booking_info
 
+    # Labels to display booking details
     summary_label = tk.Label(summary_page, text="Booking Summary", font=("Helvetica", 20))
     summary_label.pack(pady=10)
 
@@ -48,20 +52,21 @@ def show_summary_page(booking_info, address):
     total_cost_label = tk.Label(summary_page, text=f"Total Cost: ${total_cost:.2f}")
     total_cost_label.pack()
 
-    # Get coordinates from the address
+    # Gets coordinates from the address
     lng, lat = get_coordinates_from_address(address)
 
     if lng is not None and lat is not None:
+        # Creates a folium map with a marker for the address
         m = folium.Map(location=[lat, lng], zoom_start=15)
         folium.Marker([lat, lng], popup=IFrame(html=f"Address: {address}", width=300, height=100)).add_to(m)
 
         map_html = "map.html"
         m.save(map_html)
 
-        # Use webview to display the map
+        # Uses webview to display the map
         webview.create_window("Booking Map", map_html, width=800, height=600)
         webview.start()
     else:
         print("Coordinates not available for the address.")
 
-    summary_page.mainloop()
+    summary_page.mainloop() # Starts the summary page GUI loop

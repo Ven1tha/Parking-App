@@ -3,9 +3,9 @@ import customtkinter
 import tkinter as tk
 import subprocess
 
-#sets the background of the login page to black
+# Sets the background of the login page to black
 customtkinter.set_appearance_mode("light")
-#sets the buttons within the page to blue
+# Sets the buttons within the page to blue
 customtkinter.set_default_color_theme("dark-blue")
 
 root = customtkinter.CTk()
@@ -19,7 +19,7 @@ def gainAccess():
 
     if not len(username or password) < 1:
         try:
-            # Open the logininfo.txt file for reading
+            # Opens the logininfo.txt file for reading
             db = open("DB\\logininfo.txt", "r")
             for i in db:
                 user_id, stored_username, stored_password = i.strip().split(", ")
@@ -53,7 +53,7 @@ def open_home():
     root.destroy()
     subprocess.run(["python", "home2.py"])
 
-#GUI
+# GUI
 frame = customtkinter.CTkFrame(master=root)
 frame.pack(pady=20, padx=60, fill="both", expand=True)
 
@@ -69,7 +69,7 @@ entry2.pack(padx=10, pady=12)
 login_button = customtkinter.CTkButton(master=frame, text="Login", command=login)
 login_button.pack(pady=12, padx=10)
 
-#button allows users to easily navigate to the signup page if they don't have an account
+# Button allows users to easily navigate to the signup page if they don't have an account
 signup_label = customtkinter.CTkLabel(master=frame, text="Don't have an account? Click Here!", font=("Blinker", 10), cursor="hand2", fg_color="#E5E5E5")
 signup_label.pack(pady=5)
 signup_label.bind("<Button-1>", lambda event: open_signup())
