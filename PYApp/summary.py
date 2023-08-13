@@ -7,10 +7,9 @@ from folium import IFrame
 #Defines the Mapbox API access token
 MAPBOX_ACCESS_TOKEN = "pk.eyJ1IjoibmlnZXJpYW5wcmluY2UiLCJhIjoiY2xrZzBqeXR4MTZscjNlczRzNGJzZTQ2dyJ9.HXMHqRz1_umaam16lvKQFw"
 
-# Function to retrieve coordinates from an address using Mapbox API
-
 
 def get_coordinates_from_address(address):
+    """Function to retrieve coordinates from an address using Mapbox API"""
     geocoding_endpoint = f"https://api.mapbox.com/geocoding/v5/mapbox.places/{address}.json"
 
     params = {
@@ -27,10 +26,9 @@ def get_coordinates_from_address(address):
         print("Error retrieving coordinates.")
         return None
 
-# Function to display the booking summary page with map
-
 
 def show_summary_page(booking_info, address):
+    """Function to display the booking summary page with map"""
     summary_page = tk.Tk()
     summary_page.title("Booking Summary")
 

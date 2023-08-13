@@ -12,10 +12,9 @@ root = customtkinter.CTk()
 root.geometry("500x350")
 root.title("Login")
 
-# Function to authenticate and gain access
-
 
 def gainAccess():
+    """Function to authenticate and gain access"""
     username = entry1.get().lower()
     password = entry2.get()
 
@@ -48,17 +47,15 @@ def gainAccess():
 def login():
     gainAccess()
 
-# Function to open the signup.py file
-
 
 def open_signup():
+    """Function to open the signup.py file"""
     root.destroy()
     subprocess.run(["python", "signup.py"])
 
-# Function to open the home2.py file
-
 
 def open_home():
+    """Function to open the home2.py file"""
     root.destroy()
     subprocess.run(["python", "home2.py"])
 

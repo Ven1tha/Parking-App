@@ -15,17 +15,15 @@ root = customtkinter.CTk()
 root.geometry("500x350")
 root.title("Signup")
 
-# Function to open the login.py file and close the signup window
-
 
 def open_login():
+    """Function to open the login.py file and close the signup window"""
     root.destroy()
     subprocess.run(["python", "login.py"])
 
-# Generates a random userID that will be assigned to every user
-
 
 def generate_user_id():
+    """Generates a random userID that will be assigned to every user"""
     user_id = random.randint(1000, 9999)
     with open("DB\\logininfo.txt", "r") as db:
         for line in db:
@@ -33,10 +31,9 @@ def generate_user_id():
                 return generate_user_id()
     return str(user_id)
 
-# Registers a new user
-
 
 def register():
+    """Registers a new user"""
     username = entry1.get().lower()
     password1 = entry2.get()
     password2 = entry3.get()

@@ -7,7 +7,7 @@ from PIL import ImageTk, Image
 
 
 def open_next_page():
-    # Closes the old window before opening a new one
+    """Closes the old window before opening a new one"""
     window.destroy()
 
     # Function to handle button click and navigate to the next page
