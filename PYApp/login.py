@@ -1,3 +1,4 @@
+"""Allows users to login with their created account"""
 import bcrypt
 import customtkinter
 import subprocess

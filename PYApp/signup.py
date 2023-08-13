@@ -1,3 +1,4 @@
+"""Allows users to create an account within the program"""
 import tkinter.messagebox
 import tkinter
 import subprocess

@@ -1,3 +1,4 @@
+"""Displays the mapp and summary data after booking"""
 import tkinter as tk
 import requests
 import webview

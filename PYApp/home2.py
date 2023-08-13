@@ -1,3 +1,4 @@
+"""Allows users to list and book parking spaces"""
 import tkinter as tk
 from tkinter import messagebox, simpledialog
 import re
