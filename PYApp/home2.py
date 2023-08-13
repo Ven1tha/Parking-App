@@ -102,7 +102,8 @@ def list_parking_space():
     # Ensure the inputs are English
     if not re.match(r'^[a-zA-Z\s]+$', street_name) or not re.match(r'^[a-zA-Z\s]+$', city):
         messagebox.showwarning("Warning", 
-        "Street name and city should contain only English alphabetic characters.")
+        "All input boxes should be filled and" 
+        " contain only English alphabetic characters and numbers for the House Number.")
         return
 
     if house_number and street_name and city:
