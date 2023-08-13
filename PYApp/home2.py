@@ -89,13 +89,8 @@ def list_parking_space():
     street_name = entry_street_name.get()
     city = entry_city.get()
 
-    # Check if the street name and city have integers
-    if not street_name.isalpha() or not city.isalpha():
-        messagebox.showwarning("Warning", "Street name and city should contain only alphabetic characters.")
-        return
-
-    #Ensure the inputs are english
-    if not re.match(r'^[a-zA-Z]+$', street_name) or not re.match(r'^[a-zA-Z]+$', city):
+    # Ensure the inputs are English
+    if not re.match(r'^[a-zA-Z\s]+$', street_name) or not re.match(r'^[a-zA-Z\s]+$', city):
         messagebox.showwarning("Warning", "Street name and city should contain only English alphabetic characters.")
         return
 
