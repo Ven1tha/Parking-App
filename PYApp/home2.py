@@ -1,5 +1,7 @@
+"""Allows users to list and book parking spaces"""
 import tkinter as tk
 from tkinter import messagebox, simpledialog
+import re
 import requests
 from cryptography.fernet import Fernet
 
@@ -9,21 +11,24 @@ NOMINATIM_ENDPOINT = "https://nominatim.openstreetmap.org/search"
 # Defining the file for encryption key storage
 ENCRYPTION_KEY_FILE = "encryption_key.key"
 
-# Functions for encryption key management
+
 def load_encryption_key():
+    """Functions for encryption key management"""
     try:
         with open(ENCRYPTION_KEY_FILE, "rb") as key_file:
             return key_file.read()
     except FileNotFoundError:
         return None
 
-# Saves the encryption key file
+
 def save_encryption_key(key):
+    """"Saves the encryption key file"""
     with open(ENCRYPTION_KEY_FILE, "wb") as key_file:
         key_file.write(key)
 
-#Loads or genertes an encryption key when needed
+
 def generate_or_load_encryption_key():
+    """Loads or genertes an encryption key when needed"""
     loaded_key = load_encryption_key()
     if loaded_key:
         return loaded_key
@@ -36,16 +41,19 @@ def generate_or_load_encryption_key():
 encryption_key = generate_or_load_encryption_key()
 cipher_suite = Fernet(encryption_key)
 
-# Encryption function
+
 def encrypt(text):
+    """Encryption function"""
     return cipher_suite.encrypt(text.encode()).decode()
 
-#Decypt function
+
 def decrypt(encrypted_text):
+    """Decypt function"""
     return cipher_suite.decrypt(encrypted_text.encode()).decode()
 
-# Function to read and decrypt listings from the file
+
 def read_listings():
+    """Function to read and decrypt listings from the file"""
     listings = []
     with open("DB/listings.txt", "r") as file:
         for line in file:
@@ -59,8 +67,9 @@ def read_listings():
                 # Handles decryption errors
     return listings
 
-# Function to autocomplete address using Nominatim API
+
 def autocomplete_address(input_text):
+    """Function to autocomplete address using Nominatim API"""
     params = {
         "format": "json",
         "q": input_text
@@ -70,8 +79,9 @@ def autocomplete_address(input_text):
     suggestions = [result["display_name"] for result in data]
     return suggestions
 
-# Function to validate address using Nominatim API
+
 def validate_address(address):
+    """Function to validate address using Nominatim API"""
     params = {
         "format": "json",
         "q": address
@@ -80,13 +90,20 @@ def validate_address(address):
     data = response.json()
     return len(data) > 0
 
-# Function to list a parking space
+
 def list_parking_space():
+    """Function to list a parking space"""
     global entry_house_number, entry_street_name, entry_city, listbox_available_spaces
 
     house_number = entry_house_number.get()
     street_name = entry_street_name.get()
     city = entry_city.get()
+
+    # Ensure the inputs are English
+    if not re.match(r'^[a-zA-Z\s]+$', street_name) or not re.match(r'^[a-zA-Z\s]+$', city):
+        messagebox.showwarning("Warning", 
+        "Street name and city should contain only English alphabetic characters.")
+        return
 
     if house_number and street_name and city:
         full_address = f"{house_number}, {street_name}, {city}"
@@ -105,13 +122,21 @@ def list_parking_space():
                     messagebox.showwarning("Warning", "This address is already listed.")
                     return
 
+        # Check if all three input fields have the same value
+        if (
+            street_name == city
+        ):
+            messagebox.showerror("Error", "Please enter different values for each field.")
+            return
+
         # Validates the address
         if not validate_address(full_address):
             messagebox.showwarning("Warning", "Invalid address. Please enter a valid address.")
             return
 
         # Prompts the user for hourly price
-        hourly_price = simpledialog.askfloat("Hourly Price", "Enter hourly price for the parking space:")
+        hourly_price = simpledialog.askfloat("Hourly Price", 
+        "Enter hourly price for the parking space:")
         if hourly_price is None:
             return  # If the User canceled then return
 
@@ -130,8 +155,9 @@ def list_parking_space():
     else:
         messagebox.showwarning("Warning", "Please fill in all the fields!")
 
-# Function to book a parking space
+
 def book_parking_space():
+    """Function to book a parking space"""
     global listbox_available_spaces
 
     selected_space = listbox_available_spaces.curselection()
@@ -188,8 +214,9 @@ def book_parking_space():
     booking_info = (username, float(hourly_price), duration, total_cost)
     show_summary_page(booking_info, address)
 
-# Function to create the home page GUI
+
 def create_home_page():
+    """Function to create the home page GUI"""
     global entry_house_number, entry_street_name, entry_city, listbox_available_spaces
 
     home_page = tk.Tk()
@@ -216,7 +243,8 @@ def create_home_page():
     entry_city = tk.Entry(frame_list_parking)
     entry_city.grid(row=2, column=1)
 
-    button_list_parking = tk.Button(frame_list_parking, text="List Parking Space", command=list_parking_space)
+    button_list_parking = tk.Button(frame_list_parking, text="List Parking Space",
+    command=list_parking_space)
     button_list_parking.grid(row=3, column=0, columnspan=2, pady=10)
 
     frame_book_parking = tk.Frame(home_page)
@@ -228,7 +256,8 @@ def create_home_page():
     scrollbar_available_spaces = tk.Scrollbar(frame_book_parking)
     scrollbar_available_spaces.pack(side=tk.RIGHT, fill=tk.Y)
 
-    listbox_available_spaces = tk.Listbox(frame_book_parking, yscrollcommand=scrollbar_available_spaces.set)
+    listbox_available_spaces = tk.Listbox(frame_book_parking,
+    yscrollcommand=scrollbar_available_spaces.set)
     listbox_available_spaces.pack(fill=tk.BOTH, expand=True)
 
     listings = read_listings()
@@ -238,14 +267,16 @@ def create_home_page():
 
     scrollbar_available_spaces.config(command=listbox_available_spaces.yview)
 
-    button_book_parking = tk.Button(frame_book_parking, text="Book Parking Space", command=book_parking_space)
+    button_book_parking = tk.Button(frame_book_parking, text="Book Parking Space",
+    command=book_parking_space)
     button_book_parking.pack(pady=10)
 
     # Starts the main GUI loop
     home_page.mainloop()
 
-# Main function to start the application
+
 def main():
+    """Main function to start the application"""
     root = tk.Tk()
     root.withdraw()  # Hides the main root window
 
